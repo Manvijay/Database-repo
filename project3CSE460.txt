@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE tinyFICCO [
+
+<!ELEMENT tinyFICCO (customer+,bank+, bankAccount+)>
+
+<!ELEMENT customer (legal_name, former_name*, address+ ,phone_number+, account_number+)>
+<!ELEMENT legal_name (#PCDATA)>
+<!ELEMENT former_name (#PCDATA)>
+<!ELEMENT address (Street, City, State, ZIP)>
+	<!ELEMENT Street (#PCDATA)>
+	<!ELEMENT City (#PCDATA)>
+	<!ELEMENT State (#PCDATA)>
+	<!ELEMENT ZIP (#PCDATA)>
+<!ELEMENT phone_number (#PCDATA)>
+<!ELEMENT account_number (#PCDATA)>
+<!ATTLIST customer SSN ID #REQUIRED>
+
+<!ELEMENT bank (name)>
+<!ELEMENT name (#PCDATA)>
+<!ATTLIST bank code ID #REQUIRED>
+
+<!ELEMENT bankAccount EMPTY>
+<!ATTLIST bankAccount account_number ID #IMPLIED>
+<!ATTLIST bankAccount type (Checking|Credit|Saving) #REQUIRED>
+<!ATTLIST bankAccount bank_code IDREF #REQUIRED>
+
+]>
+
+<tinyFICCO>
+
+<customer SSN="a12345678">
+	<legal_name> Manvijay </legal_name>
+	<former_name> yoyo </former_name>
+	<address> 
+		<Street> 94 Englewood Avenue </Street>
+		<City> Buffalo </City>
+		<State> New York </State>
+		<ZIP> 14214 </ZIP>
+	</address>
+	<phone_number> 7165638200 </phone_number>
+	<account_number> a9901521640 </account_number>
+</customer>
+
+<bank code="a123er45">
+	<name> Bank Of America </name>
+</bank>
+<bank code="a123er46">
+	<name> JP Morgan </name>
+</bank>
+
+<bankAccount account_number='a9901521640' type="Checking" bank_code='a123er45'/>
+
+</tinyFICCO>
+
+
+
+
+
+xquery version "3.1";
+
+(: Problem 2.1 :)
+let $bk :=doc('/db/books.xml')/books/book[author="John" and author= "Mary"]/title
+return $bk
+
+
+(: Problem 2.2 :)
+let $bk :=doc('/db/books.xml')
+for $b in $bk/books/book
+where $b/author="John" and count($b/author = "Mary")=0
+return $b/title
+
+(: Problem 2.3 :)
+let $bk :=doc('/db/books.xml')
+let $alist := $bk/books/book/author
+for $a in distinct-values($alist)
+let $countBooks := count($bk/books/book[author=$a and year="2000"])
+order by $a
+return <output>
+       <author> {$a} </author>
+       <books> {$countBooks} </books>
+       </output>
+
+
